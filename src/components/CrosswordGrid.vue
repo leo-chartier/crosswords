@@ -1,61 +1,63 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed } from 'vue';
 
 const props = defineProps({
   cells: { type: Array, required: true }
 });
 
-const windowWidth = ref(window.innerWidth);
-const windowHeight = ref(window.innerHeight);
-const width = computed(() => (props.cells || [])[0]?.length);
-const height = computed(() => props.cells?.length);
-
-function cellSize () {
-  const maxWidth = windowWidth.value / width.value;
-  const maxHeight = windowHeight.value / height.value;
-  return Math.min(maxWidth, maxHeight);
-};
+const nRows = computed(() => props.cells.length);
+const nCols = computed(() => Math.max(...props.cells.map(row => row.length)));
+const aspectRatio = computed(() => nCols.value / nRows.value);
 
 const gridStyle = computed(() => {
   return {
-    display: 'grid',
-    gridTemplateColumns: `repeat(${width.value || 0}, ${cellSize()}px)`
+    gridTemplateRows: `repeat(${nRows.value}, 1fr)`,
+    gridTemplateColumns: `repeat(${nCols.value}, 1fr)`,
+    width: `calc(min(100vw, (100vh - 50px) * ${aspectRatio.value}))`,
+    height: `calc(min(100vh - 50px, 100vw / ${aspectRatio.value}))`
   };
-});
-
-const cellStyle = computed(() => {
-  return {
-    width: cellSize() + "px",
-    height: cellSize() + "px",
-    lineHeight: cellSize() + "px",
-    textAlign: "center",
-    fontSize: cellSize() * 0.75 + "px",
-    textTransform: "uppercase",
-    border: "1px solid #000",
-  };
-});
-
-onMounted(() => {
-  window.addEventListener("resize", () => {
-    windowWidth.value = window.innerWidth;
-    windowHeight.value = window.innerHeight;
-  });
 });
 </script>
 
 <template>
-  <div class="grid" :style="gridStyle">
-    <div
-      v-for="(row, i) in cells"
-      :key="i">
-      <div
-        v-for="(cell, j) in row"
-        :key="j"
-        :style="cellStyle"
-        contenteditable
-        @input="$emit('update-cell', {event: $event, i, j})">
-        {{ cell }}
-      </div>
+  <div class="grid-container">
+    <div class="grid" :style="gridStyle">
+      <template v-for="(row, i) in props.cells" :key="i">
+        <div v-for="(cell, j) in row.padEnd(nCols, ' ')" :key="`${i}-${j}`" class="cell-container">
+          <div class="cell">{{ cell }}</div>
+        </div>
+      </template>
     </div>
   </div>
 </template>
+
+<style scoped>
+.grid-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: calc(100vh - 50px);
+}
+
+.grid {
+  display: grid;
+}
+
+.cell-container {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+}
+
+.cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: lightgray;
+  color: black;
+  border: solid 1px black;
+}
+</style>

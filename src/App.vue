@@ -1,9 +1,14 @@
 <script setup>
 import { ref } from 'vue'
 
-const cells = ref([['a', '#'], ['', 'c']]);
+const cells = ref([
+  'test',
+  'a'
+]);
 
 import CrosswordGrid from './components/CrosswordGrid.vue'
+import HeaderBar from './components/HeaderBar.vue'
+import WordSearch from './components/WordSearch.vue'
 
 function updateCell({ event, i, j }) {
   const text = event.target.innerText.trim();
@@ -23,6 +28,10 @@ function updateCell({ event, i, j }) {
 </script>
 
 <template>
+  <HeaderBar>
+    <WordSearch />
+    <WordSearch />
+  </HeaderBar>
   <main>
     <CrosswordGrid :cells="cells" @update-cell="updateCell" />
   </main>
