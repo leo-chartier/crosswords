@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 const props = defineProps({
   cells: { type: Array, required: true }
@@ -17,6 +17,24 @@ const gridStyle = computed(() => {
     height: `calc(min(100vh - 50px, 100vw / ${aspectRatio.value}))`
   };
 });
+
+const cellRefs = ref([]);
+
+onMounted(() => {
+  const observer = new ResizeObserver(entries => {
+    for (let entry of entries) {
+      const cell = entry.target;
+      const size = Math.min(entry.contentRect.width, entry.contentRect.height);
+      cell.style.fontSize = `${size * 0.8}px`;
+    }
+  });
+
+  cellRefs.value.forEach(cell => observer.observe(cell));
+});
+
+const isWhitespace = (cell) => {
+  return !cell.trim();
+};
 </script>
 
 <template>
@@ -24,7 +42,7 @@ const gridStyle = computed(() => {
     <div class="grid" :style="gridStyle">
       <template v-for="(row, i) in props.cells" :key="i">
         <div v-for="(cell, j) in row.padEnd(nCols, ' ')" :key="`${i}-${j}`" class="cell-container">
-          <div class="cell">{{ cell }}</div>
+          <div ref="cellRefs" class="cell" :class="{ 'definition': isWhitespace(cell) }">{{ cell }}</div>
         </div>
       </template>
     </div>
@@ -59,5 +77,11 @@ const gridStyle = computed(() => {
   background-color: lightgray;
   color: black;
   border: solid 1px black;
+  overflow: hidden;
+  text-transform: uppercase;
+}
+
+.definition {
+  background-color: darkgrey;
 }
 </style>
