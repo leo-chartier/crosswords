@@ -9,7 +9,7 @@ header {
   display: flex;
   height: 50px;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: space-between;
 }
 
 :deep(button) {
