@@ -14,29 +14,29 @@ export function removeAccents(text, regex = false) {
 
 export async function setDictLang(lang) {
   dict.value = null;
-  await fetch('src/assets/dict.json')
-    .then((response) => response.json())
-    .then((urls) => urls[lang])
-    .then((url) =>
-      fetch(url)
-        .then((response) => response.text())
-        .then((text) => {
-          const lines = text
-            .trim()
-            .split('\n')
-            .map((line) => line.trim())
-            .map((line) => removeAccents(line));
-          dict.value = [...new Set(lines)].join('\n');
-        })
-        .catch((reason) => {
-          console.error(reason);
-          dict.value = '';
-        }),
-    )
-    .catch((reason) => {
-      console.error(reason);
-      dict.value = '';
-    });
+
+  try {
+    const response = await fetch('src/assets/dict.json');
+    if (!response.ok) throw new Error(`Failed to fetch dict.json: ${response.statusText}`);
+    const urls = await response.json();
+
+    const url = urls[lang];
+    if (!url) throw new Error(`No URL found for language: ${lang}`);
+
+    const textResponse = await fetch(url);
+    if (!textResponse.ok)
+      throw new Error(`Failed to fetch language file: ${textResponse.statusText}`);
+    const text = await textResponse.text();
+
+    const lines = text
+      .trim()
+      .split('\n')
+      .map((line) => removeAccents(line.trim()));
+    dict.value = [...new Set(lines)].join('\n');
+  } catch (error) {
+    console.error(error);
+    dict.value = '';
+  }
 }
 
 export function findWord(pattern) {
