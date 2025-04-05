@@ -16,8 +16,8 @@ export async function setDictLang(lang) {
   dict.value = null;
 
   try {
-    const response = await fetch('src/assets/dict.json');
-    if (!response.ok) throw new Error(`Failed to fetch dict.json: ${response.statusText}`);
+    const response = await fetch('public/dict_urls.json');
+    if (!response.ok) throw new Error(`Failed to fetch dict_urls.json: ${response.statusText}`);
     const urls = await response.json();
 
     const url = urls[lang];
