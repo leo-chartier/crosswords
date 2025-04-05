@@ -30,7 +30,6 @@ function updateCell({ event, i, j }) {
 <template>
   <HeaderBar>
     <WordSearch />
-    <WordSearch />
   </HeaderBar>
   <main>
     <CrosswordGrid :cells="cells" @update-cell="updateCell" />
