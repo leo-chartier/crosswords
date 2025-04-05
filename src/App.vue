@@ -8,6 +8,7 @@ const cells = ref([
 
 import CrosswordGrid from './components/CrosswordGrid.vue';
 import HeaderBar from './components/HeaderBar.vue';
+import LoadingScreen from './components/LoadingScreen.vue';
 import WordSearch from './components/WordSearch.vue';
 
 function updateCell({ event, i, j }) {
@@ -28,6 +29,7 @@ function updateCell({ event, i, j }) {
 </script>
 
 <template>
+  <LoadingScreen />
   <HeaderBar>
     <WordSearch />
   </HeaderBar>

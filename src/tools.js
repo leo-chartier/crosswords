@@ -1,4 +1,8 @@
-let dict = null;
+import { computed, ref } from 'vue';
+
+const dict = ref(null);
+
+export const isLoading = computed(() => dict.value == null);
 
 export function removeAccents(text, regex = false) {
   if (regex) text = text.replaceAll(' ', '.');
@@ -9,7 +13,7 @@ export function removeAccents(text, regex = false) {
 }
 
 export async function setDictLang(lang) {
-  dict = null;
+  dict.value = null;
   await fetch('src/assets/dict.json')
     .then((response) => response.json())
     .then((urls) => urls[lang])
@@ -22,16 +26,16 @@ export async function setDictLang(lang) {
             .split('\n')
             .map((line) => line.trim())
             .map((line) => removeAccents(line));
-          dict = [...new Set(lines)].join('\n');
+          dict.value = [...new Set(lines)].join('\n');
         })
         .catch((reason) => {
           console.error(reason);
-          dict = '';
+          dict.value = '';
         }),
     )
     .catch((reason) => {
       console.error(reason);
-      dict = '';
+      dict.value = '';
     });
 }
 
