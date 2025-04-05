@@ -1,15 +1,10 @@
 <script setup>
-import { ref } from 'vue';
-
-const cells = ref([
-  'test',
-  'a'
-]);
-
-import CrosswordGrid from './components/CrosswordGrid.vue';
-import HeaderBar from './components/HeaderBar.vue';
-import LoadingScreen from './components/LoadingScreen.vue';
-import WordSearch from './components/WordSearch.vue';
+import { cells } from '@/grid';
+import CrosswordGrid from '@/components/CrosswordGrid.vue';
+import GridSetup from '@/components/GridSetup.vue';
+import HeaderBar from '@/components/HeaderBar.vue';
+import LoadingScreen from '@/components/LoadingScreen.vue';
+import WordSearch from '@/components/WordSearch.vue';
 
 function updateCell({ event, i, j }) {
   const text = event.target.innerText.trim();
@@ -31,6 +26,7 @@ function updateCell({ event, i, j }) {
 <template>
   <LoadingScreen />
   <HeaderBar>
+    <GridSetup />
     <WordSearch />
   </HeaderBar>
   <main>

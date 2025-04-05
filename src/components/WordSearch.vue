@@ -35,8 +35,7 @@ input {
 }
 
 .match-count {
-  position: absolute;
-  right: 20px;
+  margin-left: 10px;
 }
 
 .word-list {
