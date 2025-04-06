@@ -68,7 +68,7 @@ function select() {
   font-size: calc(var(--font-size) / 5);
   line-height: calc(var(--font-size) / 5);
   overflow: hidden;
-  word-break: break-all;
+  word-break: break-word;
   hyphens: auto;
 }
 
