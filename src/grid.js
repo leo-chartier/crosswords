@@ -1,7 +1,5 @@
-import { ref } from 'vue';
-
-export const cells = ref(['test', 'a']);
+import { store } from '@/store';
 
 export function resetGrid(width, height) {
-  cells.value = Array.from({ length: height }, () => ' '.repeat(width));
+  store.cells = Array.from({ length: height }, () => ' '.repeat(width));
 }

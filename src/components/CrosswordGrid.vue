@@ -1,12 +1,10 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUpdated, ref, watch } from 'vue';
+import { store } from '@/store.js';
+import Cell from '@/components/Cell.vue';
 
-const props = defineProps({
-  cells: { type: Array, required: true }
-});
-
-const nRows = computed(() => props.cells.length);
-const nCols = computed(() => Math.max(...props.cells.map(row => row.length)));
+const nRows = computed(() => store.cells.length);
+const nCols = computed(() => Math.max(...store.cells.map(row => row.length)));
 const aspectRatio = computed(() => nCols.value / nRows.value);
 
 const gridStyle = computed(() => {
@@ -19,30 +17,36 @@ const gridStyle = computed(() => {
 });
 
 const cellRefs = ref([]);
-
-onMounted(() => {
-  const observer = new ResizeObserver(entries => {
-    for (let entry of entries) {
-      const cell = entry.target;
-      const size = Math.min(entry.contentRect.width, entry.contentRect.height);
-      cell.style.fontSize = `${size * 0.8}px`;
-    }
-  });
-
-  cellRefs.value.forEach(cell => observer.observe(cell));
+const observer = new ResizeObserver(entries => {
+  for (let entry of entries) {
+    const cell = entry.target;
+    const size = Math.min(entry.contentRect.width, entry.contentRect.height);
+    cell.style.fontSize = `${size * 0.8}px`;
+  }
 });
 
-const isWhitespace = (cell) => {
-  return !cell.trim();
-};
+function updateObserver() {
+  cellRefs.value.forEach(comp => {
+    if (comp?.cellRef) {
+      observer.observe(comp.cellRef);
+    }
+  });
+}
+
+watch(() => store.cells, () => {
+  cellRefs.value = [];
+});
+
+onMounted(updateObserver);
+onUpdated(updateObserver);
 </script>
 
 <template>
   <div class="grid-container">
     <div class="grid" :style="gridStyle">
-      <template v-for="(row, i) in props.cells" :key="i">
-        <div v-for="(cell, j) in row.padEnd(nCols, ' ')" :key="`${i}-${j}`" class="cell-container">
-          <div ref="cellRefs" class="cell" :class="{ 'definition': isWhitespace(cell) }">{{ cell }}</div>
+      <template v-for="(row, i) in store.cells" :key="i">
+        <div v-for="(cell, j) in row" :key="`${i}-${j}`" class="cell-container">
+          <Cell ref="cellRefs" :row="i" :column="j" />
         </div>
       </template>
     </div>
@@ -66,22 +70,5 @@ const isWhitespace = (cell) => {
   width: 100%;
   height: 100%;
   aspect-ratio: 1 / 1;
-}
-
-.cell {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  background-color: lightgray;
-  color: black;
-  border: solid 1px black;
-  overflow: hidden;
-  text-transform: uppercase;
-}
-
-.definition {
-  background-color: darkgrey;
 }
 </style>
