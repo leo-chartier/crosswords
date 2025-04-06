@@ -14,6 +14,6 @@ export const store = reactive({
   defsBelow: {
     '0,0': 'below test 1 2 3 4 5 6 7 8 9 very­long­word',
   },
-  selectedRow: null,
-  selectedColumn: null,
+  lastRow: null,
+  lastColumn: null,
 });

@@ -11,20 +11,27 @@ const defSide = computed(() => store.defsSide[`${props.row},${props.column}`]);
 const defBelow = computed(() => store.defsBelow[`${props.row},${props.column}`]);
 
 function updateCell(event) {
-  console.log(event);
   const text = event.target.value.trim();
   if (text.match(/^[a-z]?$/i)) {
     store.cells[props.row][props.column] = text;
   }
   event.target.value = store.cells[props.row][props.column];
 };
+
+function select() {
+  store.lastRow = props.row;
+  store.lastColumn = props.column;
+}
 </script>
 
 <template>
-  <input v-if="store.cells[row][column] != null" class="cell" @blur="updateCell" :value="store.cells[row][column]" />
+  <input v-if="store.cells[row][column] != null" class="cell" @focus="select" @blur="updateCell"
+    :value="store.cells[row][column]" />
   <div v-if="store.cells[row][column] == null" class="defs-container">
-    <div v-if="defSide != undefined" class="definition def-side">{{ defSide }}</div>
-    <div v-if="defBelow != undefined" class="definition def-below">{{ defBelow }}</div>
+    <div v-if="defSide != undefined" class="definition def-side" @focus="select" contenteditable>{{
+      defSide }}</div>
+    <div v-if="defBelow != undefined" class="definition def-below" @focus="select" contenteditable>{{
+      defBelow }}</div>
   </div>
 </template>
 
@@ -47,12 +54,12 @@ function updateCell(event) {
   flex-direction: column;
   align-items: stretch;
   height: 100%;
+  background-color: darkgrey;
 }
 
 .definition {
   flex: 1 1 auto;
   width: 100%;
-  background-color: darkgrey;
   color: black;
   border: solid 1px black;
   text-align: center;
