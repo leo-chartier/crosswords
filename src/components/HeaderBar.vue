@@ -17,4 +17,12 @@ header {
   font-size: 1em;
   border-radius: 5px;
 }
+
+:deep(button):enabled {
+  cursor: pointer;
+}
+
+:deep(button):disabled {
+  cursor: not-allowed;
+}
 </style>
