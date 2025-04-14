@@ -18,8 +18,8 @@ async function openModal() {
         if (!videoInput) throw new Error('No video input devices found.');
         return navigator.mediaDevices.getUserMedia({
           video: {
-            deviceId: { exact: videoInput.deviceId },
-            width: { ideal: 4096 }
+            deviceId: videoInput.deviceId,
+            width: { ideal: 1280 }
           }
         });
       });
