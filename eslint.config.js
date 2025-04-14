@@ -18,6 +18,7 @@ export default [
   {
     languageOptions: {
       globals: {
+        cv: "readonly",
         ...globals.browser,
       },
     },

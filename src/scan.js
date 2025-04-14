@@ -1,22 +1,48 @@
+let openCVReady = null;
+
+function getOpenCV() {
+  if (openCVReady) return openCVReady;
+
+  openCVReady = new Promise((resolve) => {
+    const script = document.createElement('script');
+    script.src = 'https://docs.opencv.org/4.11.0/opencv.js';
+    script.onload = () => cv.then(resolve);
+    document.head.appendChild(script);
+  });
+
+  return openCVReady;
+}
+
 /**
  * @param {HTMLCanvasElement} canvas
  */
-export function scan(canvas) {
-  let ctx = canvas.getContext('2d');
-  let data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-  let pixels = Array.from({ length: data.length / 4 }, (_, i) => data.slice(4 * i, 4 * i + 3));
-  let gray = pixels.map((rgb) => Math.floor(rgb.reduce((a, v) => a + v) / 3));
+export async function scan(canvas) {
+  const opencv = await getOpenCV();
 
-  // TEMP
-  for (let i = 0; i < gray.length; i++) {
-    data[i * 4] = data[i * 4 + 1] = data[i * 4 + 2] = gray[i];
-  }
-  ctx.putImageData(new ImageData(data, canvas.width), 0, 0);
+  const ctx = canvas.getContext('2d');
+  const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const mat = opencv.matFromImageData(imgData);
+
+  const gray = new opencv.Mat();
+  opencv.cvtColor(mat, gray, opencv.COLOR_RGBA2GRAY, 0);
+  show(opencv, canvas, gray);
+
+  mat.delete();
+  gray.delete();
+}
+
+/**
+ * @param {HTMLCanvasElement} canvas
+ */
+function show(opencv, canvas, mat) {
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  opencv.imshow(canvas, mat);
+
   document.body.append(canvas);
   canvas.style.display = 'block';
   canvas.style.position = 'absolute';
   canvas.style.top = 0;
   canvas.style.left = 0;
-
-  // TODO: Reimplement opencv's algorithm because I can't build the node package for some reason
 }
